@@ -1,7 +1,7 @@
-*.o a.out
-*.elf *.bin
-blink.ss
-blink.dump
+*.o
+a.out
+*.elf
+*.bin
 blink.elf
 *.uf2
 makeuf2
