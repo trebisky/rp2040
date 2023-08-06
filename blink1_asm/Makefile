@@ -23,8 +23,8 @@ all:	blink.uf2 blink.dump
 install:	blink.uf2
 	cp blink.uf2 /run/media/tom/RPI-RP2
 
-blink.uf2:	blink.bin makeuf2
-	./makeuf2 blink.bin blink.uf2
+blink.uf2:	blink.bin
+	makeuf2 blink.bin blink.uf2
 
 blink.bin:	blink.elf
 	$(OBJ) blink.elf blink.bin
@@ -40,16 +40,9 @@ blink.elf:	$(OBJS)
 blink.o : blink.S
 	$(AS) -c blink.S
 
-# A utility to run on the local host.
-makeuf2 : makeuf2.c crcpico.h
-	gcc -O2 makeuf2.c -o makeuf2
-
 clean:
 	rm -f *.o a.out
 	rm -f *.elf *.bin
 	rm -f blink.ss blink.dump
 	rm -f blink.s
 	rm -f *.uf2
-	rm -f makeuf2
-
-

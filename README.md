@@ -9,5 +9,6 @@ I was never a great fan of the Raspberry Pi, but the Pico and RP2040 are
 another thing entirely.  The more I work with them, the more I like them.
 Everything is open source, even the bootrom code.
 
+* makeuf2 - tool to create uf2 files from bin files
 * blink1 - simple C program to blink the onboard LED
 * blink1_asm - same thing coded in assembly language
