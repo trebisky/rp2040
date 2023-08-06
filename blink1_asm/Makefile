@@ -5,7 +5,6 @@
 ARMCPU = -mcpu=cortex-m0 -mthumb
 
 COPTS = -Wall -O2 -ffreestanding $(ARMCPU)
-#COPTS = -Wall -ffreestanding $(ARMCPU)
 AOPTS = --warn --fatal-warnings $(ARMCPU)
 LDOPTS = -nostdlib
 
@@ -17,7 +16,7 @@ OBJ = arm-none-eabi-objcopy -O binary
 #DUMP = arm-linux-gnu-objdump -d
 DUMP = arm-none-eabi-objdump -d
 
-OBJS = start.o blink.o
+OBJS = blink.o
 
 all:	blink.uf2 blink.dump
 
@@ -36,18 +35,10 @@ blink.dump:	blink.elf
 blink.elf:	$(OBJS)
 	$(LD) -T blink.lds $(OBJS) -o blink.elf
 
-blink.ss:	blink.c
-	$(CC) -S blink.c
-	mv blink.s blink.ss
-
-blink.o:	blink.c
-	$(CC) -c blink.c
-
 # Interestingly, start.s does not run cpp as I want,
 # but when I rename to start.S I can use preprocessor stuff.
-start.o : start.S
-	#$(AS) start.s -o start.o
-	$(AS) -c start.S
+blink.o : blink.S
+	$(AS) -c blink.S
 
 # A utility to run on the local host.
 makeuf2 : makeuf2.c crcpico.h
