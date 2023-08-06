@@ -1,0 +1,45 @@
+
+blink.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+10000000 <start>:
+10000000:	490c      	ldr	r1, [pc, #48]	@ (10000034 <delay_loop+0x8>)
+10000002:	2020      	movs	r0, #32
+10000004:	6008      	str	r0, [r1, #0]
+10000006:	490c      	ldr	r1, [pc, #48]	@ (10000038 <delay_loop+0xc>)
+
+10000008 <wait_loop>:
+10000008:	688a      	ldr	r2, [r1, #8]
+1000000a:	4210      	tst	r0, r2
+1000000c:	d0fc      	beq.n	10000008 <wait_loop>
+1000000e:	490b      	ldr	r1, [pc, #44]	@ (1000003c <delay_loop+0x10>)
+10000010:	2005      	movs	r0, #5
+10000012:	22cc      	movs	r2, #204	@ 0xcc
+10000014:	5088      	str	r0, [r1, r2]
+10000016:	490a      	ldr	r1, [pc, #40]	@ (10000040 <delay_loop+0x14>)
+10000018:	480a      	ldr	r0, [pc, #40]	@ (10000044 <delay_loop+0x18>)
+1000001a:	6248      	str	r0, [r1, #36]	@ 0x24
+
+1000001c <blink_loop>:
+1000001c:	6148      	str	r0, [r1, #20]
+1000001e:	f000 f804 	bl	1000002a <blink_delay>
+10000022:	6188      	str	r0, [r1, #24]
+10000024:	f000 f801 	bl	1000002a <blink_delay>
+10000028:	e7f8      	b.n	1000001c <blink_loop>
+
+1000002a <blink_delay>:
+1000002a:	4b07      	ldr	r3, [pc, #28]	@ (10000048 <delay_loop+0x1c>)
+
+1000002c <delay_loop>:
+1000002c:	3b01      	subs	r3, #1
+1000002e:	2b00      	cmp	r3, #0
+10000030:	d1fc      	bne.n	1000002c <delay_loop>
+10000032:	4770      	bx	lr
+10000034:	4000f000 	.word	0x4000f000
+10000038:	4000c000 	.word	0x4000c000
+1000003c:	40014000 	.word	0x40014000
+10000040:	d0000000 	.word	0xd0000000
+10000044:	02000000 	.word	0x02000000
+10000048:	00080000 	.word	0x00080000

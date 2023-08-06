@@ -62,8 +62,8 @@ wait_loop:
 	@ Set function select to software IO
 	@ for GPIO 25
 	ldr	r1,=IO_BANK0_BASE_RW
-	mov	r2, #0xcc
 	mov	r0,#5
+	mov	r2, #0xcc
 	str	r0,  [r1,r2]
 
 	@ Enable output for GPIO 25
