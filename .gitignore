@@ -1,0 +1,7 @@
+*.o a.out
+*.elf *.bin
+blink.ss blink.dump
+*.uf2
+makeuf2
+
+
