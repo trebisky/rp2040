@@ -19,7 +19,7 @@ DUMP = arm-none-eabi-objdump -d
 
 OBJS = start.o blink.o
 
-all:	blink.uf2 blink.dump
+all:	blink.uf2 blink.dump blink.ss
 
 install:	blink.uf2
 	cp blink.uf2 /run/media/tom/RPI-RP2
@@ -56,7 +56,7 @@ makeuf2 : makeuf2.c crcpico.h
 clean:
 	rm -f *.o a.out
 	rm -f *.elf *.bin
-	rm -f blink.ss blink.dump
+	#rm -f blink.ss blink.dump
 	rm -f blink.s
 	rm -f *.uf2
 	rm -f makeuf2

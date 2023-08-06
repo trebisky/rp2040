@@ -10,3 +10,4 @@ another thing entirely.  The more I work with them, the more I like them.
 Everything is open source, even the bootrom code.
 
 * blink1 - simple C program to blink the onboard LED
+* blink1_asm - same thing coded in assembly language
