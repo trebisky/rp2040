@@ -3,3 +3,4 @@ a.out
 *.elf
 *.bin
 *.uf2
+*.OLD

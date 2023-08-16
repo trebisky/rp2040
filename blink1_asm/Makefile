@@ -40,6 +40,11 @@ blink.elf:	$(OBJS)
 blink.o : blink.S
 	$(AS) -c blink.S
 
+# =================================
+# target remote localhost:3333
+gdb:
+	arm-none-eabi-gdb blink.elf
+
 clean:
 	rm -f *.o a.out
 	rm -f *.elf *.bin

@@ -9,14 +9,14 @@
 #
 # Tom Trebisky  8-6-2023
 
-all:	makeuf2
+all:	mkuf2
 
 # You may need to be root to do this.
-install:	makeuf2
-	cp makeuf2 /usr/local/bin
+install:	mkuf2
+	cp mkuf2 /usr/local/bin
 
-makeuf2 : makeuf2.c crcpico.h
-	gcc -O2 makeuf2.c -o makeuf2
+mkuf2 : mkuf2.c
+	gcc -O2 mkuf2.c -o mkuf2
 
 clean:
-	rm -f makeuf2
+	rm -f mkuf2

@@ -1,17 +1,50 @@
-/* Shamelessly taken from David Welch (see his copyright at bottom of this file).
- * https://github.com/dwelch67/raspberrypi-pico
- * 8-4-2023
- * Thanks David!
+/* makeuf2.c
+ * convert a binary image into a uf2 file
+ * that will be booted onto the rp2040 (Pi Pico)
+ * Tom Trebisky  8-16-2023
+ * Modeled after the utility written by David Welch
  */
-
 #include <stdio.h>
 #include <stdlib.h>
+
+void
+usage ( void )
+{
+	fprintf ( stderr, "Usage: mkuf2 [-s] binfile uf2file\n" );
+	exit ( 1 );
+}
+
+int main ( int argc, char **argv )
+{
+	char *p;
+
+	if ( argc < 3 )
+	    usage ();
+
+	argc--;
+	argv++;
+	if ( **argv == '-' ) {
+	    p = *argv;
+	    if ( p[1] == 's' )
+		printf ( "SRAM\n" );
+	    argc--;
+	    argv++;
+	}
+	if ( argc != 2 )
+	    usage ();
+
+	return 0;
+}
+
+#ifdef DAVID
 #include <string.h>
 
-#include "crcpico.h"
+// No need for CRC
+// #include "crcpico.h"
 
+#define DSIZE 0x10000
 unsigned int wdata[128];
-unsigned char data[512];
+unsigned char data[DSIZE<<1];
 
 FILE *fp;
 
@@ -20,7 +53,11 @@ int main ( int argc, char *argv[] )
     unsigned int len;
     unsigned int ra;
     unsigned int rb;
-    unsigned int crc;
+    // unsigned int crc;
+    unsigned int blocks;
+    unsigned int nblock;
+    unsigned int add;
+    unsigned int doff;
 
     if(argc<3)
     {
@@ -36,46 +73,21 @@ int main ( int argc, char *argv[] )
     memset(data,0x00,sizeof(data));
     len=fread(data,1,sizeof(data),fp);
     fclose(fp);
-    printf("%u bytes read\n",len);
-    if(len>(256-4))
+
+    printf("%u bytes read (0x%X)\n",len,len);
+    if(len>DSIZE)
     {
         printf("too big\n");
         return(1);
     }
-
-    crc=0xFFFFFFFF;
-    for(ra=0;ra<(256-4);ra++)
+    if(len==0)
     {
-        unsigned char tableoff;
-
-        tableoff=(crc>>24)&0xFF;
-        tableoff^=data[ra];
-        crc<<=8;
-        crc^=crc_pico[tableoff];
+        printf("too small\n");
+        return(1);
     }
-    //printf("0x%08X\n",crc);
-    data[ra++]=(crc>> 0)&0xFF;
-    data[ra++]=(crc>> 8)&0xFF;
-    data[ra++]=(crc>>16)&0xFF;
-    data[ra++]=(crc>>24)&0xFF;
-    //printf("0x%02X%02X%02X%02X\n",
-        //data[255],
-        //data[254],
-        //data[253],
-        //data[252]);
-//0x0A324655 0x9E5D5157 0x00002000 0x10001D00 0x00000100 0x0000001D 0x00000032 0xE48BFF56   0x0AB16F30
+    blocks=(len+0xFF)>>8;
+    printf("blocks 0x%X (0x%X)\n",blocks,len);
 
-    memset(wdata,0x00,sizeof(wdata));
-    wdata[0]=0x0A324655;
-    wdata[1]=0x9E5D5157;
-    wdata[2]=0x00002000;
-    wdata[3]=0x10000000;
-    wdata[4]=0x00000100;
-    wdata[5]=0x00000000;
-    wdata[6]=0x00000001;
-    wdata[7]=0xE48BFF56;
-    memcpy(&wdata[8],data,256);
-    wdata[127]=0x0AB16F30;
 
     fp=fopen(argv[2],"wb");
     if(fp==NULL)
@@ -83,10 +95,33 @@ int main ( int argc, char *argv[] )
         printf("Error creating file [%s]\n",argv[2]);
         return(1);
     }
-    fwrite(wdata,1,sizeof(wdata),fp);
+
+    add=0x10000000; //Flash
+    // add=0x20000000; //SRAM
+
+    doff=0;
+    for(nblock=0;nblock<blocks;nblock++)
+    {
+        memset(wdata,0x00,sizeof(wdata));
+        wdata[0]=0x0A324655;
+        wdata[1]=0x9E5D5157;
+        wdata[2]=0x00002000;
+        wdata[3]=add;
+        wdata[4]=0x00000100;
+        wdata[5]=nblock;
+        wdata[6]=blocks;
+        wdata[7]=0xE48BFF56;
+        memcpy(&wdata[8],&data[doff],256);
+        wdata[127]=0x0AB16F30;
+        fwrite(wdata,1,sizeof(wdata),fp);
+        add+=0x100;
+        doff+=0x100;
+    }
+
     fclose(fp);
     return(0);
 }
+#endif /* DAVID */
 
 //-------------------------------------------------------------------------
 //

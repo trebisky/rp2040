@@ -3,11 +3,11 @@
  */
 
 /* Link it to run in the XIP (execute in place) region.
-. = 0x10000000;
+ * (irrelevant, this is position independent code)
  */
 
 SECTIONS
 {
-    . = 0x90000000;
+    . = 0x10000000;
     .text   : { *(.text*)   }
 }

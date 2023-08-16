@@ -2,10 +2,10 @@
  * Tom Trebisky  8/4/2023
  */
 
-/* Link it to run in the XIP (execute in place) region */
+/* Any base address will do, this is PI code */
 
 SECTIONS
 {
-    . = 0x10000000;
+    . = 0xdeadbeef;
     .text   : { *(.text*)   }
 }
