@@ -15,8 +15,19 @@ all:	mkuf2
 install:	mkuf2
 	cp mkuf2 /usr/local/bin
 
-mkuf2 : mkuf2.c
-	gcc -O2 mkuf2.c -o mkuf2
+OBJ = mkuf2.o crc32.o
+
+mkuf2 : $(OBJ)
+	gcc $(OBJ) -o mkuf2
+
+mkuf2.o : mkuf2.c
+	gcc -O2 -c mkuf2.c
+
+crc32.o : crc32.c
+	gcc -O2 -c crc32.c
+
+test:
+	./mkuf2 -s test.bin test.uf2
 
 clean:
 	rm -f mkuf2

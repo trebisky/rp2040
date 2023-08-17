@@ -24,7 +24,7 @@ install:	blink.uf2
 	cp blink.uf2 /run/media/tom/RPI-RP2
 
 blink.uf2:	blink.bin
-	makeuf2 blink.bin blink.uf2
+	mkuf2 blink.bin blink.uf2
 
 blink.bin:	blink.elf
 	$(OBJ) blink.elf blink.bin
