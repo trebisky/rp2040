@@ -74,32 +74,39 @@ blink_delay ( void )
 }
 
 void
-blink ( void )
+do_reset ( int who )
 {
         struct resets *rp;
-	struct sio *sp;
-	struct io_bank0 *iop;
 
-	/* reset IO Bank 0 */
         rp = (struct resets *) RESET_BASE_CLR;
-        rp->reset = R_IO_BANK0;
+        rp->reset = who;
 
         rp = (struct resets *) RESET_BASE_RW;
-        while ( (rp->done & R_IO_BANK0) == 0 )
+        while ( (rp->done & who) == 0 )
             ;
+}
+
+static inline void
+set_io_func ( int gpio, int func )
+{
+        struct io_bank0 *iop;
+
+        iop = (struct io_bank0 *) IO_BANK0_BASE_RW;
+        iop->io[gpio].ctrl = func;
+}
+
+
+void
+blink ( void )
+{
+	struct sio *sp;
+
+	do_reset ( R_IO_BANK0 );
+
+	set_io_func ( 25, 5 );
 
         sp = (struct sio *) SIO_BASE;
-
-	// sp->gpio_oe_clr = GPIO_25;
-	// sp->gpio_out_clr = GPIO_25;
-
-	/* Set function select to software IO */
-        iop = (struct io_bank0 *) IO_BANK0_BASE_RW;
-	iop->io[25].ctrl = 5;
-
 	sp->gpio_oe_set = GPIO_25;
-	// sp->gpio_out_set = GPIO_25;	// led on
-	// sp->gpio_out_clr = GPIO_25;	// led off
 
 	for ( ;; ) {
 	    // on

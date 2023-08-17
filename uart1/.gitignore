@@ -2,6 +2,8 @@
 a.out
 *.elf
 *.bin
+*.elf
+*.dump
 *.uf2
-*.OLD
-*.swp
+
+
