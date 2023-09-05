@@ -23,7 +23,9 @@ OBJS = start.o blink.o
 all:	blink.uf2 blink.dump blink.ss
 
 install:	blink.uf2
-	cp blink.uf2 /run/media/tom/RPI-RP2
+	#cp blink.uf2 /run/media/tom/RPI-RP2
+	rm -f /home/tom/pico/*.uf2
+	cp blink.uf2 /home/tom/pico
 
 blink.uf2:	blink.bin
 	mkuf2 blink.bin blink.uf2
