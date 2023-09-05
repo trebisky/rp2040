@@ -1,3 +1,5 @@
 test.bin
-test.uf2
+*.uf2
 mkuf2
+dump_uf2
+*.o
