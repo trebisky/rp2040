@@ -40,4 +40,5 @@ dump:
 	./dump_uf2 blink.uf2
 
 clean:
-	rm -f mkuf2
+	rm -f mkuf2 dump_uf2
+	rm -f *.o
