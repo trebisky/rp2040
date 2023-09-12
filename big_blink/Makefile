@@ -18,6 +18,8 @@ OBJ = arm-none-eabi-objcopy -O binary
 #DUMP = arm-linux-gnu-objdump -d
 DUMP = arm-none-eabi-objdump -d
 
+BOOT2 = ../boot2/boot2-sdk.bin
+
 OBJS = start.o blink.o
 
 all:	blink.uf2
@@ -26,7 +28,7 @@ install:	blink.uf2
 	cp blink.uf2 /run/media/tom/RPI-RP2
 
 blink.uf2:	blink.bin
-	mkuf2 blink.bin blink.uf2
+	mkuf2 -b $(BOOT2) blink.bin blink.uf2
 
 blink.bin:	blink.elf
 	$(OBJ) blink.elf blink.bin
@@ -46,10 +48,19 @@ start.o : start.S
 	#$(AS) start.s -o start.o
 	$(AS) -c start.S
 
+SDK = /u1/Projects/rp2040/pico-examples/build/blink
+
+# This is 512*39 bytes in size -- 19968 bytes
+sdkblink.uf2:
+	cp $(SDK)/blink.uf2 sdkblink.uf2
+
+sdkblink.bin:
+	cp $(SDK)/blink.bin sdkblink.bin
+
 clean:
 	rm -f *.o a.out
 	rm -f *.elf *.bin
 	rm -f blink.dump
 	rm -f *.uf2
 
-
+# THE END

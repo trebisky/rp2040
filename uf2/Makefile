@@ -35,6 +35,7 @@ blink.uf2:
 
 test:
 	./mkuf2 -s test.bin test.uf2
+	cmp test.uf2 testOLD.uf2
 
 dump:
 	./dump_uf2 blink.uf2

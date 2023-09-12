@@ -3,13 +3,57 @@
 # Tom Trebisky  9-5-2023
 #
 
-SDK = /u1/Projects/rp2040/pico-examples/build/pico-sdk/src/rp2_common/boot_stage2
+SDKBIN = /u1/Projects/rp2040/pico-examples/build/pico-sdk/src/rp2_common/boot_stage2
+SDKSRC = /u1/Projects/rp2040/pico-sdk/src
 
-all:	boot2-sdk.bin
+ARMCPU = -mcpu=cortex-m0 -mthumb
+OPTS = -Wall -ffreestanding $(ARMCPU)
+#COPTS = -Wall -gdwarf-4 -ffreestanding $(ARMCPU)
+LDOPTS = -nostdlib
+
+AS = arm-none-eabi-gcc $(COPTS)
+DUMP = arm-none-eabi-objdump -d
+OBJ = arm-none-eabi-objcopy -O binary
+LD = arm-none-eabi-ld $(LDOPTS)
+
+# ====================================
+
+OBJS = boot2.o
+
+#all:	boot2-sdk.bin
+all:	boot2.bin
+
+boot2.o: boot2.S
+	$(AS) -c boot2.S
+
+boot2.elf:      $(OBJS)
+	 $(LD) -T boot2.lds $(OBJS) -o boot2.elf
+
+boot2.bin:      boot2.elf
+	$(OBJ) boot2.elf boot2.bin
+
+boot2.dump:     boot2.elf
+	$(DUMP) boot2.elf >boot2.dump
+
+inc:
+#	cp $(SDKSRC)/rp2_common/boot_stage2/boot2_at25sf128a.S boot2.S
+#	cp $(SDKSRC)/rp2040/hardware_regs/include/hardware/regs/ssi.h .
+#	cp $(SDKSRC)/rp2040/hardware_regs/include/hardware/regs/pads_qspi.h .
+#	cp $(SDKSRC)/rp2040/hardware_regs/include/hardware/regs/m0plus.h .
+
+clean:
+	rm -f boot2.bin
+	rm -f zap.*
+	rm -f *.o
+	rm -f *.dump *.elf
+
+# ============= some old experiments below here:
 
 boot2-sdk.bin:
-	cp $(SDK)/bs2_default.bin boot2-sdk.bin
+	cp $(SDKBIN)/bs2_default.bin boot2-sdk.bin
 
+# Not at all useful, but I wanted to see
+# it wrapped into a uf2
 boot2.uf2: boot2-sdk.bin
 	mkuf2 boot2-sdk.bin boot2.uf2
 
@@ -32,5 +76,4 @@ zap:	zap.uf2
 boot2:	boot2.uf2
 	cp boot2.uf2 /run/media/tom/RPI-RP2
 
-clean:
-	rm -f *.bin
+# THE END

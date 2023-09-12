@@ -37,7 +37,7 @@ struct uf2_block {
     u32 magicStart1;
     u32 flags;
     u32 targetAddr;
-    u32 payloadSize;
+    u32 payloadSize;	// 0x10
     u32 blockNo;
     u32 numBlocks;
     u32 familyID; 	// or fileSize
@@ -130,9 +130,11 @@ int main ( int argc, char **argv )
 	    if ( nread > (SSIZE-4) )
 		error ( "boot file too big" );
 	    close ( fd );
-	    printf ( "SSB - read: %d bytes\n", nboot );
-	}
 
+	    printf ( "SSB - read: %d bytes\n", nboot );
+	    argc--;
+	    argv++;
+	}
 
 	/* Read main image */
 	fd = open ( argv[0], O_RDONLY );
@@ -153,7 +155,7 @@ int main ( int argc, char **argv )
 	    block_num++;
 	}
 
-	printf ( "Read: %d bytes (%d blocks)\n", nread, nb_main );
+	printf ( "Image - read: %d bytes (%d blocks)\n", nread, nb_main );
 
 	/* The idea here is that the bootloader works by looking
 	 * for a 256 byte sector with a valid checksum.
@@ -176,6 +178,10 @@ int main ( int argc, char **argv )
 	    write_ssb ( fd, image );
 	    close ( fd );
 	    return 0;
+	}
+
+	if ( target_type == FLASH2 ) {
+	    write_ssb ( fd, boot_image );
 	}
 
 	if ( target_type == SRAM ) {
