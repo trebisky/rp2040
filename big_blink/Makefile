@@ -18,7 +18,9 @@ OBJ = arm-none-eabi-objcopy -O binary
 #DUMP = arm-linux-gnu-objdump -d
 DUMP = arm-none-eabi-objdump -d
 
-BOOT2 = ../boot2/boot2-sdk.bin
+#BOOT2 = ../boot2/boot2-sdk.bin
+#BOOT2 = ../boot2/boot2_vec.bin
+BOOT2 = ../boot2/boot2_novec.bin
 
 OBJS = start.o blink.o
 

@@ -1,17 +1,29 @@
 // ----------------------------------------------------------------------------
 //
-// boot2_at25sf128a.S
+// Hacked by Tom Trebisky  9-15-2023, but this is still under the Raspberry Pi
+//  copyright as indicated below.
+// This began as boot2_at25sf128a.S, but merged in features from boot2_w25q080.S
+//  once I realized that the latter was the file being used for the pico
+//
 // from: pico-sdk/src/rp2_common/boot_stage2/boot2_at25sf128a.S
+//
+// =====================================================================
 //
 // Second stage boot code
 // Copyright (c) 2019-2021 Raspberry Pi (Trading) Ltd.
 // SPDX-License-Identifier: BSD-3-Clause
 //
-// Device:      Adesto AT25SF128A
+// Device:      (optionally) Adesto AT25SF128A
 //              Based on W25Q080 code: main difference is the QE bit is being set
 //              via command 0x31
+//		Use -DADESTO if you want this (which is unlikely)
 //
-// Description: Configures AT25SF128A to run in Quad I/O continuous read XIP mode
+// Device:      Winbond W25Q080
+//              Also supports W25Q16JV (which has some different SR instructions)
+//              Also supports AT25SF081
+//              Also supports S25FL132K0
+//
+// Description: Configures W25Q080 or AT25SF128A to run in Quad I/O continuous read XIP mode
 //
 // Details:     * Check status register 2 to determine if QSPI mode is enabled,
 //                and perform an SR2 programming cycle if necessary.
@@ -61,7 +73,12 @@
 // the address bits in a "Read Data Fast Quad I/O" command sequence. 
 // On W25Q080, the four LSBs are don't care, and if MSBs == 0xa, the
 // next read does not require the 0xeb instruction prefix.
+
+#ifdef ADESTO
 #define MODE_CONTINUOUS_READ 0x20
+#else
+#define MODE_CONTINUOUS_READ 0xA0
+#endif
 
 // The number of address + mode bits, divided by 4 (always 4, not function of
 // interface width).
@@ -83,7 +100,8 @@
 #define CMD_READ_STATUS 0x05
 #define CMD_READ_STATUS2 0x35
 #define CMD_WRITE_STATUS 0x01
-#define CMD_WRITE_STATUS2 0x31
+#define CMD_WRITE_STATUS2 0x31	// only for Adesto
+
 #define SREG_DATA 0x02  // Enable quad-SPI mode
 
 // TJT move these here
@@ -215,9 +233,17 @@ program_sregs:
     ldr r1, [r3, #SSI_DR0_OFFSET]
 
     // Send status write command followed by data bytes
+#ifdef ADESTO
     movs r1, #CMD_WRITE_STATUS2
     str r1, [r3, #SSI_DR0_OFFSET]
     str r2, [r3, #SSI_DR0_OFFSET]
+#else
+    movs r1, #CMD_WRITE_STATUS
+    str r1, [r3, #SSI_DR0_OFFSET]
+    movs r0, #0
+    str r0, [r3, #SSI_DR0_OFFSET]
+    str r2, [r3, #SSI_DR0_OFFSET]
+#endif
 
     bl wait_ssi_ready
     ldr r1, [r3, #SSI_DR0_OFFSET]
@@ -319,14 +345,25 @@ configure_ssi:
 
 // #include "hardware/regs/m0plus.h"
 
-// If entered from the bootrom, lr (which we earlier pushed) will be 0,
-// and we vector through the table at the start of the main flash image.
-// Any regular function call will have a nonzero value for lr.
+// Nobody actually references this.
 check_return:
+
+#ifdef NOVEC
+    // Introduced by TJT 9-15-2023
+    // No vector table in image, just jump to first location
+    // Must be odd to run as thumb code
+    ldr r0, =(XIP_BASE + 0x101)
+    bx r0
+#else
+    // -- this is the traditional transfer in the boot2 code -- TJT
+    // If entered from the bootrom, lr (which we earlier pushed) will be 0,
+    // and we vector through the table at the start of the main flash image.
+    // Any regular function call will have a nonzero value for lr.
     pop {r0}
     cmp r0, #0
     beq vector_into_flash
     bx r0
+
 vector_into_flash:
     ldr r0, =(XIP_BASE + 0x100)
     ldr r1, =(PPB_BASE + M0PLUS_VTOR_OFFSET)
@@ -334,10 +371,13 @@ vector_into_flash:
     ldmia r0, {r0, r1}
     msr msp, r0
     bx r1
+#endif
 
+// ===== Subroutines below here
 
 // Common functions
 // #include "boot2_helpers/wait_ssi_ready.S"
+// 3 calls to this above
 wait_ssi_ready:
     push {r0, r1, lr}
 
@@ -360,6 +400,7 @@ wait_ssi_ready:
 
 // Pass status read cmd into r0.
 // Returns status value in r0.
+// 2 calls to this above
 
 .global read_flash_sreg
 .type read_flash_sreg,%function

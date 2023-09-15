@@ -7,8 +7,12 @@
 
 #define STACK	0x20001000
 
+// We put these here when first experimenting and needed to
+// work with the boot2 file from the SDK
+#ifdef VECTOR
     .word STACK
     .word _start
+#endif
 
 // It is vital to declare this a .thumb_func
 // This causes an odd address to be generated in

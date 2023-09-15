@@ -18,22 +18,29 @@ LD = arm-none-eabi-ld $(LDOPTS)
 
 # ====================================
 
-OBJS = boot2.o
-
 #all:	boot2-sdk.bin
-all:	boot2.bin
+all:	boot2_vec.bin boot2_novec.bin
 
-boot2.o: boot2.S
-	$(AS) -c boot2.S
+boot2_vec.o: boot2.S
+	$(AS) -c boot2.S -o boot2_vec.o
 
-boot2.elf:      $(OBJS)
-	 $(LD) -T boot2.lds $(OBJS) -o boot2.elf
+boot2_vec.elf:      boot2_vec.o
+	 $(LD) -T boot2.lds boot2_vec.o -o boot2_vec.elf
 
-boot2.bin:      boot2.elf
-	$(OBJ) boot2.elf boot2.bin
+boot2_vec.bin:      boot2_vec.elf
+	$(OBJ) boot2_vec.elf boot2_vec.bin
 
-boot2.dump:     boot2.elf
-	$(DUMP) boot2.elf >boot2.dump
+boot2_vec.dump:     boot2_vec.elf
+	$(DUMP) boot2_vec.elf >boot2_vec.dump
+
+boot2_novec.o: boot2.S
+	$(AS) -DNOVEC -c boot2.S -o boot2_novec.o
+
+boot2_novec.elf:      boot2_novec.o
+	 $(LD) -T boot2.lds boot2_novec.o -o boot2_novec.elf
+
+boot2_novec.bin:      boot2_novec.elf
+	$(OBJ) boot2_novec.elf boot2_novec.bin
 
 inc:
 #	cp $(SDKSRC)/rp2_common/boot_stage2/boot2_at25sf128a.S boot2.S
