@@ -234,7 +234,7 @@ struct uart {
 #define UART0_BASE_RW	(struct uart *) (UART0_BASE + FL_RW)
 
 void
-putc ( int ch )
+uart_putc ( int ch )
 {
 	struct uart *up = UART0_BASE_RW;
 
@@ -244,7 +244,17 @@ putc ( int ch )
 }
 
 void
-uart_init ( void )
+uart_puts ( char *s )
+{
+        while ( *s ) {
+            if (*s == '\n')
+                uart_putc('\r');
+            uart_putc(*s++);
+        }
+}
+
+void
+uart_setup ( void )
 {
 	struct uart *up = UART0_BASE_RW;
 
@@ -301,7 +311,8 @@ void
 talker ( void )
 {
 	for ( ;; ) {
-	    putc ( 'H' );
+	    // uart_putc ( 'H' );
+	    uart_puts ( "Hello\n" );
 	    io_delay ();
 	}
 }
@@ -330,7 +341,7 @@ clocks_init ( void )
 }
 
 void
-uart_main ( void )
+uart_init ( void )
 {
 	/* reset IO Bank 0 - need here for LED */
 	do_reset ( R_IO_BANK0 );
@@ -338,7 +349,7 @@ uart_main ( void )
 	clocks_init ();
 
 	do_reset ( R_UART0 );
-	uart_init ();
+	uart_setup ();
 
 	/* Select UART on pins 16 and 17 */
 	set_io_func ( 16, 2 );
@@ -351,7 +362,7 @@ uart_main ( void )
 #endif
 
 	// blinker ();
-	talker ();
+	// talker ();
 }
 
 /* THE END */

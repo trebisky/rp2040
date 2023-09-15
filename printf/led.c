@@ -107,29 +107,32 @@ led_off ( void )
 	sp->gpio_out_clr = GPIO_25;
 }
 
+// ==================================
+
+// This blinks at about 1 Hz
+#define DELAY_COUNT	0x80000
+
+void
+blink_delay ( void )
+{
+	volatile int delay = DELAY_COUNT;
+
+	while ( delay-- )
+	    ;
+}
+
 void
 blinker ( void )
 {
-	led_init ();
+	// led_init ();
 
 	for ( ;; ) {
 	    led_on ();
-	}
-}
+	    blink_delay ();
 
-#ifdef  notdef
-void
-my_main ( void )
-{
-	for ( ;; ) {
-	    // on
-	    sp->gpio_out_set = GPIO_25;
-	    blink_delay ();
-	    // off
-	    sp->gpio_out_clr = GPIO_25;
+	    led_off ();
 	    blink_delay ();
 	}
 }
-#endif
 
 /* THE END */
