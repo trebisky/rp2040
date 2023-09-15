@@ -312,7 +312,8 @@ talker ( void )
 {
 	for ( ;; ) {
 	    // uart_putc ( 'H' );
-	    uart_puts ( "Hello\n" );
+	    // uart_puts ( "Hello\n" );
+	    printf ( "Hello Sailor!\n" );
 	    io_delay ();
 	}
 }

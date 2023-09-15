@@ -12,4 +12,7 @@ void uart_init ( void );
 void uart_puts ( char * );
 void talker ( void );
 
+void printf ( char *, ... );
+void sprintf ( char *, char *, ... );
+
 /* THE END */
