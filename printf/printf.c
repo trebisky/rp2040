@@ -1,29 +1,16 @@
-/* serial.c
- * (c) Tom Trebisky  7-2-2017
+/* printf.c
+ * (c) Tom Trebisky  7-2-2017, 9-15-2023
  *
- * Serial (uart) driver for the F411
- * For the 411 this is section 19 of RM0383
+ * Taken from my EBAZ (Zynq)  project
+ * Taken from my STM32F11 project
  *
- * This began (2017) as a simple polled output driver for
- *  console messages on port 1
- * In 2020, I decided to extend it to listen to a GPS receiver
- *  on port 2.
+ * This implements a simple and limited printf.
  *
- * Notice that I number these 1,2,3.
- * However my "3" is what they call "6" in the manual.
- * 
- * On the F411, USART1 and USART6 are on the APB2 bus.
- * On the F411, USART2 is on the APB1 bus.
- *
- * On the F411, after reset, with no fiddling with RCC
- *  settings, both are running at 16 Mhz.
- *  Apparently on the F411 both APB1 and APB2
- *   always run at the same rate.
- *
- * NOTE: On my black pill boards, pins C6 and C7 are not available,
- *  Meaning that UART3 (aka UART6) is not available.
- *  The code is in here, but not of much use if you can't
- *  get to the pins!!
+ *  %s prints a string
+ *  %c prints a single byte
+ *  %x prints a byte as hex (2 digits)
+ *  %h or %X prints a 32 bit integer as hex (8 digits)
+ *  %d prints a decimal number (if you are lucky).
  */
 
 #include <stdarg.h>

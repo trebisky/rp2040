@@ -7,6 +7,7 @@ void led_off ( void );
 void blinker ( void );
 
 void do_reset ( int );
+void io_delay ( void );
 
 void uart_init ( void );
 void uart_puts ( char * );

@@ -148,7 +148,8 @@ struct sio {
 
 // This blinks at about 1 Hz
 #define BLINK_DELAY_COUNT	0x80000
-#define TALK_DELAY_COUNT	0x20000
+// #define TALK_DELAY_COUNT	0x20000
+#define TALK_DELAY_COUNT	0x60000
 
 #ifdef notdef
 void
@@ -306,18 +307,6 @@ iam_here ( void )
 	blinker ();
 }
 #endif
-
-void
-talker ( void )
-{
-	for ( ;; ) {
-	    // uart_putc ( 'H' );
-	    // uart_puts ( "Hello\n" );
-	    printf ( "Hello Sailor!\n" );
-	    io_delay ();
-	}
-}
-
 void
 clocks_init ( void )
 {
