@@ -16,4 +16,7 @@ void talker ( void );
 void printf ( char *, ... );
 void sprintf ( char *, char *, ... );
 
+int digit1 ( int * );
+int digit2 ( int * );
+
 /* THE END */

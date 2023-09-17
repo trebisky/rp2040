@@ -9,6 +9,7 @@ void
 talker ( void )
 {
 	int x = 0;
+	int led_state = 0;
 
 	for ( ;; ) {
 	    x++;
@@ -21,8 +22,16 @@ talker ( void )
 	    printf ( "Count: %x\n", x );
 	    printf ( "Count: %X\n", x );
 	    printf ( "Count: %h\n", x );
+	    printf ( "Count: %d\n", x );
 	    printf ( " char:: %c\n", '5' );
 	    io_delay ();
+	    if ( led_state ) {
+		led_on ();
+		led_state = 0;
+	    } else {
+		led_off ();
+		led_state = 1;
+	    }
 	}
 }
 
@@ -32,6 +41,9 @@ my_main ( void )
 {
 	led_init ();
 	uart_init ();
+
+	printf ( "\n" );
+	printf ( " ----- Restart -----\n" );
 
 	// blinker ();
 	talker ();

@@ -40,7 +40,7 @@ BOOT2 = ../boot2/boot2_novec.bin
 
 OBJS = start.o main.o printf.o uart.o led.o
 
-all:	main.uf2
+all:	main.uf2 main.dump
 
 version:
 	$(CCX) -dumpversion

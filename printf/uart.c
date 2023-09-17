@@ -149,7 +149,7 @@ struct sio {
 // This blinks at about 1 Hz
 #define BLINK_DELAY_COUNT	0x80000
 // #define TALK_DELAY_COUNT	0x20000
-#define TALK_DELAY_COUNT	0x60000
+#define TALK_DELAY_COUNT	0x120000
 
 #ifdef notdef
 void

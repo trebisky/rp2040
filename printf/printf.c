@@ -87,22 +87,58 @@ sprintnb ( char *buf, char *end, int n, int b)
 }
 #endif
 
+/* 9-16-2023
+ *
+ * Who would expect so much trouble from %d in printf?
+ *  The basic problem is that the ARM does not have a divide
+ *  instruction.  So libgcc.a provides two functions to provide
+ *  the missing functionality:
+ *    __aeabi_idiv and __aeabi_idivmod
+ *  So the first issue is working out the link library stuff in the
+ *  Makefile to link against libgcc.a
+ * This leads to the next problem.  Apparently these functions use
+ *  some non-existant instruction (probably a multiply, but I haven't
+ *  tracked down the exact details).  This will yield an ARM illegal
+ *  instruction exception, which will probably be caught by the
+ *  vector table in the bootrom (since I have not set up vectors
+ *  of my own).  My guess is that the bootrom spins on an illegal
+ *  instruction.  What I do know is that the game skids to a halt
+ *  on the first call to one of the aeabi_*div routines.
+ *
+ * This actually leads to something more interesting.
+ *  The rp2040 actually has division hardware.
+ *  It is unique and not available as an ARM instruction.
+ *  It is a "peripheral" in the SIO section.
+ *  It might be fun, or at least interesting to write
+ *  some assembly code to use this.
+ */
+
+// #define DIVIDE_WORKS
+
+#ifdef DIVIDE_WORKS
+/* The following code is how you would write sprintn if you
+ * had a working compiler and divide instruction.
+ */
 static char *
 sprintn ( char *buf, char *end, int n )
 {
         char prbuf[16];
         char *cp;
 
+	// printf ( "sprintn %X\n", n );
         if ( n < 0 ) {
             PUTCHAR('-');
             n = -n;
         }
         cp = prbuf;
+	// uart_puts ( "sprintn A\n" );
 
         do {
             // *cp++ = "0123456789"[n%10];
             *cp++ = hex_table[n%10];
+	    // uart_puts ( "sprintn B\n" );
             n /= 10;
+	    // uart_puts ( "sprintn C\n" );
         } while (n);
 
         do {
@@ -111,6 +147,53 @@ sprintn ( char *buf, char *end, int n )
 
         return buf;
 }
+#endif
+
+#define DIVIDE_HACK
+
+#ifdef DIVIDE_HACK
+/* Once we divide by 10, the mod is easy,
+ * we multiply by 10 and subtract.
+ */
+int
+digit ( int *val )
+{
+	*val = 0;
+	return 9;
+}
+
+static char *
+sprintn ( char *buf, char *end, int n )
+{
+        char prbuf[16];
+        char *cp;
+	int d;
+
+	// printf ( "sprintn %X\n", n );
+        if ( n < 0 ) {
+            PUTCHAR('-');
+            n = -n;
+        }
+        cp = prbuf;
+	// uart_puts ( "sprintn A\n" );
+
+        do {
+            // *cp++ = "0123456789"[n%10];
+	    d = digit2 ( &n );
+            *cp++ = hex_table[d];
+	    // uart_puts ( "sprintn B\n" );
+            //n /= 10;
+	    // uart_puts ( "sprintn C\n" );
+        } while (n);
+
+	// uart_puts ( "sprintn D\n" );
+        do {
+            PUTCHAR(*--cp);
+        } while (cp > prbuf);
+
+        return buf;
+}
+#endif
 
 static char *
 shex2( char *buf, char *end, int val )
