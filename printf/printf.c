@@ -179,7 +179,41 @@ sprintn ( char *buf, char *end, int n )
 
         do {
             // *cp++ = "0123456789"[n%10];
+#ifdef notdef
 	    d = digit2 ( &n );
+
+	    /* Rotating bits example */
+	    // asm ( code : out, in, clobber );
+	    // asm("mov %[result], %[value], ror #1" : [result] "=r" (y) : [value] "r" (x));
+	    asm volatile (
+		"movs	%[digit], #0x7\n\t" 
+		"movs	%[value], #0x0\n\t" 
+		: [digit] "=r" (d)
+		, [value] "=r" (n) : : "r1"
+	    );
+#endif
+
+// #define SIO_BASE    0xD0000000
+
+	    asm volatile (
+		"ldr	r1, =0xD0000000\n\t"
+		"str	%[value], [r1,#0x60]\n\t"
+		"movs	r2, #10\n\t"
+		"str	r2, [r1,#0x64]\n\t"
+
+		// Delay for 8 cycles
+		"b 1f\n\t"
+		"1: b 1f\n\t"
+		"1: b 1f\n\t"
+		"1: b 1f\n\t"
+		"1:"
+
+		"ldr	%[digit], [r1,#0x74]\n\t"  // remainder
+		"ldr	%[value], [r1,#0x70]\n\t"  // quotient
+		: [digit] "=r" (d)
+		, [value] "+r" (n) : : "r1", "r2"
+	    );
+
             *cp++ = hex_table[d];
 	    // uart_puts ( "sprintn B\n" );
             //n /= 10;
