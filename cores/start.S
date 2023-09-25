@@ -32,6 +32,16 @@ _spin:
     @ spin here if we return
     b .
 
+/* The vector table is defined in the ARM Cortex-M0+ document.
+ * You get 16 exceptions, followed by 32 interrupts.
+ * Only 26 of the 32 are actually wired up for the RP2040
+ * (you get 0-25).
+ * Many of the 16 exceptions are "reserved" (i.e. never happen).
+ *
+ * At any rate there are 48 vectors in the table.
+ *  see section 2.3.2 in the datasheet for a list of interrupts.
+*/
+
 .global core_vectors
 .balign	256
 core_vectors:
@@ -40,18 +50,18 @@ core_vectors:
 	.word nada	// NMI
 	.word nada	// hard fault
 
-	.word nada	// 4 never happen
-	.word nada
-	.word nada
-	.word nada
+	.word nada	// -- reserved
+	.word nada	// -- reserved
+	.word nada	// -- reserved
+	.word nada	// -- reserved
 
-	.word nada	// 3 never happen
-	.word nada
-	.word nada
+	.word nada	// -- reserved
+	.word nada	// -- reserved
+	.word nada	// -- reserved
 	.word nada	// svcall
 
-	.word nada	// -- never
-	.word nada	// -- never
+	.word nada	// -- reserved
+	.word nada	// -- reserved
 	.word nada	// pendsv
 	.word nada	// systick
 
