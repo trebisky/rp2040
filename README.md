@@ -34,11 +34,14 @@ the source code to build it myself.
 Now that I have a handle on how the SSB (second stage boot) works,
 I have a lot more elbow room for more interesting projects.
 
+* printf - get a simple printf to work
+* cores - get the second core running
+
 Things to do in the future
 
-* learn to put bigger projects into flash
+* second core
+* investigate CPU clock
 * interrupts
 * timer to blink LED with interrupts
-* second core
 * play with the PIO
 * learn USB from the bottom up
