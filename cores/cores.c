@@ -141,6 +141,13 @@ void
 core_entry ( void )
 {
 	// for ( ;; ) ;
+
+	/* Without this delay we race in printf()
+	 * and get garbled output.
+	 */
+	io_delay();
+	printf ( "Core 1 running !!\n" );
+
 	blinker ();
 }
 

@@ -14,6 +14,11 @@ We now have a second stage boot (so no limits on code size) and a
 fairly decent linker script.  We still don't zero the bss, nor do
 we handle initialized data properly.
 
+This starts the second core, it prints a message with printf
+and then gets busy blinking the LED.
+Note that hardware initialization of the gpio and uart are
+done by core 0, then core 1 uses those initialized devices.
+
 * Some notes on the uart and printf --
 
 I decided to put the uart on pins 16 and 17.  Most people will expect it
