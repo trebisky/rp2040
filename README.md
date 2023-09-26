@@ -36,11 +36,10 @@ I have a lot more elbow room for more interesting projects.
 
 * printf - get a simple printf to work
 * cores - get the second core running
+* systick - get CPU running at full speed
 
 Things to do in the future
 
-* second core
-* investigate CPU clock
 * interrupts
 * timer to blink LED with interrupts
 * play with the PIO
