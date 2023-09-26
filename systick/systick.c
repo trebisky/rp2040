@@ -30,8 +30,6 @@ struct cpu {
 	vu32	syst_calib;
 };
 
-
-
 /* For reasons unknown to anyone, the datasheet and SDK call
  * this PPB_BASE.  Not only that, but there is a huge gap at
  * the start of the address space, so I set up a base address
@@ -72,13 +70,26 @@ struct cpu {
  *  any PLL setup at the basic crystal frequency.
  *
  * Note that a 24 bit counter allows us up to a 16M count.
+ *
+ * After I got the clock speed bumped to 125 Mhz, my 1000 iterations
+ * are running in 3 seconds, which is certainly encouraging.
+ * I switch to using 10000 iterations to get better accuracy from
+ * my stopwatch (and thumb).  With 10000 iterations, my stopwatch
+ * measures 25 seconds (so .0025 seconds per sample).
+ * I count 304062 systick counts in that time.
+ * This gives 121.6 Mhz, which sounds enough like 125 Mhz for me.
+ *
+ * Why do I measure the reference clock to systick as 1 Mhz?
+ * As near as I can tell the clock hardware sets this up to use
+ * the raw crystal oscillator, which is 12 Mhz.
  */
 
 void
 systick_init ( void )
 {
 	struct cpu *cp = CPU_BASE;
-	int limit = 1000;
+	int limit = 10000;
+	// int limit = 1000;
 	// int limit = 100;
 	// int limit = 10;
 	u32 val;

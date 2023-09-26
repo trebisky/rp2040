@@ -8,9 +8,19 @@ For no particular reason, I am going to do my experimenting
 with systick from core 1 rather than core 0.
 May as well wear some rubber off the tires on core 1.
 
-A side goal is to discover at what speed each core is running at.
-We thought we might do this as part of the cores demo, but
-we never did, and systick may well be a tool to check this out.
+The name here is a bit misleading.  I did indeed play with systick,
+but the main business was discovering that the CPU was running at
+12 Mhz coming out of the bootrom (the raw crystal oscillator) and
+then figuring out how to get the PLL going to bump it up to 125 Mhz.
+
+Note that both cores are run from the same clock source.
+It is not possible to run them at different speeds.
+A separate PLL is provided for USB, which must be configured
+to run at 48 Mhz, I have not yet played with that.
+
+A main goal was to discover at what speed each core was running at.
+We used systick (along with a stopwatch) to sort that out.
+Then we continued on from there and did the PLL setup work.
 
 We still don't zero the bss, nor do we handle initialized data properly.
 
