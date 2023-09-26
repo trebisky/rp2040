@@ -148,6 +148,8 @@ struct sio {
 
 // This blinks at about 1 Hz
 #define BLINK_DELAY_COUNT	0x80000
+#define TICK_DELAY_COUNT	0x8000
+
 // #define TALK_DELAY_COUNT	0x20000
 #define TALK_DELAY_COUNT	0x120000
 
@@ -162,6 +164,15 @@ blink_delay ( void )
 	    ;
 }
 #endif
+
+void
+tick_delay ( void )
+{
+	volatile int delay = TICK_DELAY_COUNT;
+
+	while ( delay-- )
+	    ;
+}
 
 void
 io_delay ( void )

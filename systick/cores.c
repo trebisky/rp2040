@@ -75,40 +75,22 @@ struct sio {
 #define	FIFO_VLD	1	/* Rx fifo is "valid" (not empty) */
 
 #define SEV()		asm volatile ( "sev\r\n" )
+#define WFE()		asm volatile ( "wfe\r\n" )
 
 /* =================================================================== */
 
-/* The following is from section 2.8.2 of the datasheet (page 133)
+int
+get_cpuid ( void )
+{
+	struct sio *sp = SIO_BASE;
+
+	return sp->cpuid;
+}
+
+/* The following is based on section 2.8.2 of the datasheet (page 133)
  * Also look at pico-bootrom/bootrom/bootrom_rt0.S
  * which is the bootrom code that is responding to this.
  */
-
-#ifdef notdef
-// vector_table is value for VTOR register
-// sp is initial stack pointer (SP)
-// entry is the initial program counter (PC) (don't forget to set the thumb bit!)
-const uint32_t cmd_sequence[] =
-{0, 0, 1, (uintptr_t) vector_table, (uintptr_t) sp, (uintptr_t) entry};
-
-uint seq = 0;
-
-do {
-    uint cmd = cmd_sequence[seq];
-    // always drain the READ FIFO (from core 1) before sending a 0
-    if (!cmd) {
-	// discard data from read FIFO until empty
-	multicore_fifo_drain();
-	// execute a SEV as core 1 may be waiting for FIFO space
-	__sev();
-    }
-    // write 32 bit value to write FIFO
-    multicore_fifo_push_blocking(cmd);
-    // read 32 bit value from read FIFO once available
-    uint32_t response = multicore_fifo_pop_blocking();
-    // move to next state on correct response (echo-d value) otherwise start over
-    seq = cmd == response ? seq + 1 : 0;
-} while (seq < count_of(cmd_sequence));
-#endif
 
 static void
 fifo_flush ( void )
@@ -148,7 +130,14 @@ core_entry ( void )
 	io_delay();
 	printf ( "Core 1 running !!\n" );
 
-	blinker ();
+	// blinker ();
+	pll_init ();
+	systick_init ();
+
+	printf ( "Core 1 spinning !!\n" );
+	for ( ;; )
+	    WFE ();
+
 }
 
 extern u32 core_vectors[];

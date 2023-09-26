@@ -5,6 +5,8 @@
  * Tom Trebisky  9-15-2023
  */
 
+#include "protos.h"
+
 typedef unsigned int u32;
 typedef volatile unsigned int vu32;
 
@@ -13,6 +15,8 @@ typedef volatile unsigned int vu32;
 #define FL_XOR          0x1000
 #define FL_SET          0x2000
 #define FL_CLR          0x3000
+
+#define GPIO_25      (1<<25)
 
 #define RESET_BASE      0x4000c000
 #define RESET_BASE_RW   (RESET_BASE + FL_RW)
@@ -54,10 +58,12 @@ struct sio {
     vu32		gpio_oe_xor;
 };
 
-/* This is just one of 32 bits */
+/* This is just one of 32 bits in the reset group*/
 #define R_IO_BANK0      (1<<5)
 
-#define GPIO_25      (1<<25)
+#define R_PLL_SYS      (1<<12)
+#define R_PLL_USB      (1<<13)
+
 
 void
 do_reset ( int who )
@@ -71,6 +77,21 @@ do_reset ( int who )
         while ( (rp->done & who) == 0 )
             ;
 }
+
+void
+pll_sys_reset ( void )
+{
+        struct resets *rp;
+
+        rp = (struct resets *) RESET_BASE_RW;
+
+	printf ( "PLL reset  ctl = %X\n", rp->reset );
+	printf ( "PLL reset done = %X\n", rp->done );
+
+	do_reset ( R_PLL_SYS );
+}
+
+// =========================================
 
 static inline void
 set_io_func ( int gpio, int func )

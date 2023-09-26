@@ -30,7 +30,8 @@ _start:
 
 _spin:
     @ spin here if we return
-    b .
+    wfe
+    b _spin
 
 /* The vector table is defined in the ARM Cortex-M0+ document.
  * You get 16 exceptions, followed by 32 interrupts.
@@ -107,7 +108,7 @@ core_vectors:
 
 .thumb_func
 nada:
-	b nada
+	b .
 
 
 // The following is a silly useless function,

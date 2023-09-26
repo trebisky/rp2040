@@ -49,7 +49,9 @@ my_main ( void )
 	printf ( "\n" );
 	printf ( " ----- Restart -----\n" );
 
+	pll_show ();
 	core_start ();
+
 	// blinker ();
 	// talker ();
 
