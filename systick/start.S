@@ -33,6 +33,17 @@ _spin:
     wfe
     b _spin
 
+// Silly experiment just to find out if PRIMASK
+// is part of the assembler (it is)
+// And if we have cpsid/ie
+.global _funk
+.thumb_func
+_funk:
+    msr	PRIMASK,r4
+    cpsid i
+    cpsie i
+    bx lr
+
 /* The vector table is defined in the ARM Cortex-M0+ document.
  * You get 16 exceptions, followed by 32 interrupts.
  * Only 26 of the 32 are actually wired up for the RP2040
@@ -64,7 +75,7 @@ core_vectors:
 	.word nada	// -- reserved
 	.word nada	// -- reserved
 	.word nada	// pendsv
-	.word nada	// systick
+	.word systick_isr	// systick
 
 	.word nada	// irq0
 	.word nada

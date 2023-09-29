@@ -24,6 +24,13 @@ Then we continued on from there and did the PLL setup work.
 
 We still don't zero the bss, nor do we handle initialized data properly.
 
+We do actually set up for systick interrupts, and this is all but
+trivial.  Add an entry to the vector table, write a short handler,
+and set the bit in the systick CSR to enable interrupts.
+
+Systick interrupts are entirely independent of the NVIC.
+The are controlled by PRIMASK.
+
 * Some notes on the uart and printf --
 
 I decided to put the uart on pins 16 and 17.  Most people will expect it

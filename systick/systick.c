@@ -85,7 +85,7 @@ struct cpu {
  */
 
 void
-systick_init ( void )
+systick_calib ( void )
 {
 	struct cpu *cp = CPU_BASE;
 	int limit = 10000;
@@ -94,21 +94,66 @@ systick_init ( void )
 	// int limit = 10;
 	u32 val;
 
-	cp->syst_rvr = 0xff0000;
-	// Use processor clock (sys_clk)
-	cp->syst_csr = CSR_SOURCE | CSR_ENA;
-	// Use "reference" clock
-	// cp->syst_csr = CSR_ENA;
-
 	// for ( ;; ) {
 	while ( limit-- ) {
 	    tick_delay ();
 	    val = cp->syst_cvr;
 	    printf ( "systick = %X %d\n", val, val );
 	}
+}
+
+// #define SEV()           asm volatile ( "sev\r\n" )
+#define INT_enable()           asm volatile ( "cpsie i" : : : "memory")
+#define INT_disable()          asm volatile ( "cpsid i" : : : "memory")
+
+static int tick_count;
+
+void
+systick_init ( void )
+{
+	struct cpu *cp = CPU_BASE;
+
+	cp->syst_rvr = 0xff0000;
+
+	// Use processor clock (sys_clk)
+	cp->syst_csr = CSR_SOURCE | CSR_ENA;
+
+	// Use "reference" clock
+	// cp->syst_csr = CSR_ENA;
+
+	// systick_calib ();
 
 	clock_init ();
+
+	/* Somewhat to my surprise, this does disable/enable the
+	 * systick interrupt!  A good thing ultimately, but I had
+	 * thought that perhaps PRIMASK would only affect actual
+	 * interrupt sources coming through the NVIC.
+	 * Note also that interrupts are enabled already,
+	 * the call below to INT_enable() is not necessary.
+	 */
+	// INT_disable();
+	INT_enable();
+
+	tick_count = 0;
+	cp->syst_csr = CSR_SOURCE | CSR_INT | CSR_ENA;
 }
+
+/* Called when we get a systick interrupt.
+ */
+void
+systick_isr ( void )
+{
+	struct cpu *cp = CPU_BASE;
+
+	printf ( "TICK %d\n", tick_count++ );
+
+	if ( tick_count > 10 ) {
+	    cp->syst_csr = CSR_SOURCE | CSR_ENA;
+	    printf ( "Done with systick interrupts\n" );
+	}
+}
+
 
 // ===============================================================
 
