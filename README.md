@@ -37,6 +37,7 @@ I have a lot more elbow room for more interesting projects.
 * printf - get a simple printf to work
 * cores - get the second core running
 * systick - get CPU running at full speed
+* systick2 - get systick interrupts from both cores
 
 Things to do in the future
 
