@@ -38,7 +38,7 @@ BOOT2 = ../boot2/boot2_novec.bin
 
 # ====================================
 
-OBJS = start.o main.o printf.o uart.o led.o cores.o systick.o
+OBJS = start.o main.o printf.o uart.o delay.o led.o cores.o systick.o
 
 all:	main.uf2 main.dump
 

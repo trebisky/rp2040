@@ -146,46 +146,7 @@ struct sio {
 
 #define GPIO_25      (1<<25)
 
-// This blinks at about 1 Hz
-#define BLINK_DELAY_COUNT	0x80000
-#define TICK_DELAY_COUNT	0x8000
-
-// #define TALK_DELAY_COUNT	0x20000
-#define TALK_DELAY_COUNT	0x120000
-
 #ifdef notdef
-void
-blink_delay ( void )
-{
-	// volatile int delay = BLINK_DELAY_COUNT;
-	volatile int delay = BLINK_DELAY_COUNT;
-
-	while ( delay-- )
-	    ;
-}
-#endif
-
-void
-tick_delay ( void )
-{
-	volatile int delay = TICK_DELAY_COUNT;
-
-	while ( delay-- )
-	    ;
-}
-
-void
-io_delay ( void )
-{
-	// volatile int delay = BLINK_DELAY_COUNT;
-	volatile int delay = TALK_DELAY_COUNT;
-
-	while ( delay-- )
-	    ;
-}
-
-#ifdef notdef
-
 #define RESET_BASE      0x4000c000
 #define RESET_BASE_RW   (RESET_BASE + FL_RW)
 #define RESET_BASE_XOR  (RESET_BASE + FL_XOR)

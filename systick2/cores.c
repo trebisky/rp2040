@@ -135,6 +135,9 @@ core_entry ( void )
 	pll_init ();
 	systick_init ();
 
+	// Will never return
+	blinker ();
+
 	printf ( "Core 1 spinning !!\n" );
 	for ( ;; )
 	    WFE ();

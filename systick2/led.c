@@ -130,18 +130,6 @@ led_off ( void )
 
 // ==================================
 
-// This blinks at about 1 Hz
-#define DELAY_COUNT	0x80000
-
-void
-blink_delay ( void )
-{
-	volatile int delay = DELAY_COUNT;
-
-	while ( delay-- )
-	    ;
-}
-
 void
 blinker ( void )
 {

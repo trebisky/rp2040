@@ -80,6 +80,7 @@ void
 my_main ( void )
 {
 	set_vtor ( (u32) core0_vectors );
+	set_cpu_clock ( 12 );
 
 	led_init ();
 	uart_init ();

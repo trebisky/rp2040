@@ -9,8 +9,10 @@ void blinker ( void );
 void do_reset ( int );
 void pll_sys_reset ( void );
 
+void blink_delay ( void );
 void io_delay ( void );
 void tick_delay ( void );
+void set_cpu_clock ( int );
 
 void uart_init ( void );
 void uart_puts ( char * );

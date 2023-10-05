@@ -265,11 +265,12 @@ pll_setup_125 ( void )
 void
 pll_init ( void )
 {
-	pll_show ();
+	// pll_show ();
 	pll_setup_125 ();
-	pll_show ();
+	// pll_show ();
 	clock_sys_pll ();
-	clock_show_all ();
+	// clock_show_all ();
+	set_cpu_clock ( 125 );
 }
 
 // ===============================================================
